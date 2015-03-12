@@ -41,6 +41,10 @@ defmodule ExHMACTest do
 
       assert Map.get(new_headers, "content-type") == "application/json"
       assert Map.get(new_headers, "X-Auth-Timestamp") == "2015-03-11T16:13:52.975884+0000"
+
+      %{headers: new_headers2} = ExHMAC.prepare(:get, url, headers, @key, @secret)
+      assert Map.get(new_headers2, "content-type") == "application/json"
+      assert Map.get(new_headers2, "X-Auth-Timestamp") == "2015-03-11T16:13:52.975884+0000"
     end
   end
 

@@ -12,6 +12,11 @@ defmodule ExHMAC do
   def prepare(url, headers, api_key, secret) do
     prepare(:get, url, headers, "", api_key, secret)
   end
+
+  def prepare(method, url, headers, api_key, secret) do
+    prepare(method, url, headers, "", api_key, secret)
+  end
+
   def prepare(method, url, headers, content, api_key, secret) when is_binary(content) do
     ts = formatted_timestamp
     new_url = append_api_key url, api_key
