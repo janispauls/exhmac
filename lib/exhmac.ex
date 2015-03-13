@@ -25,7 +25,7 @@ defmodule ExHMAC do
       headers:
         headers
         |> add_timestamp_header(ts)
-        |> add_signature_header(:get, new_url, content, ts, secret)
+        |> add_signature_header(method, new_url, content, ts, secret)
     }
   end
 

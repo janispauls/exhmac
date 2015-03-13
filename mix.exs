@@ -3,7 +3,7 @@ defmodule Exhmac.Mixfile do
 
   def project do
     [app: :exhmac,
-     version: "0.0.2",
+     version: "0.0.3",
      elixir: "~> 1.0",
      deps: deps]
   end
@@ -27,7 +27,7 @@ defmodule Exhmac.Mixfile do
   defp deps do
     [
       {:timex, "0.13.3"},
-      {:mock, github: "jjh42/mock", only: :test},
+      {:mock, github: "jjh42/mock", only: :test}
     ]
   end
 end

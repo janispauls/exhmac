@@ -64,7 +64,7 @@ defmodule ExHMACTest do
 
     with_mock ExHMAC, [:passthrough], [timestamp: fn () -> {1426, 90432, 975884} end] do
       %{headers: new_headers} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
-      assert Map.get(new_headers, "X-Auth-Signature") == "n_czaq8l0y4NsupC0kFem1q7zlf7gzqrZgPiPmNtlss="
+      assert Map.get(new_headers, "X-Auth-Signature") == "wv2Gh7XBrUxMf4cMsuTe05asZfafv7ITYhk5yT3flg8="
     end
   end
 end
