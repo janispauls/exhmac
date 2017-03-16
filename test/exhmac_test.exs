@@ -28,7 +28,7 @@ defmodule ExHMACTest do
 
     with_mock ExHMAC, [:passthrough], [timestamp: fn () -> {1426, 90432, 975884} end] do
       %{headers: headers} = ExHMAC.prepare(url, @key, @secret)
-      assert Map.get(headers, "X-Auth-Timestamp") == "2015-03-11T16:13:52.975884+0000"
+      assert Map.get(headers, "X-Auth-Timestamp") == "2015-03-11T16:13:52.975884+00:00"
     end
   end
 
@@ -40,11 +40,11 @@ defmodule ExHMACTest do
       %{headers: new_headers} = ExHMAC.prepare(url, headers, @key, @secret)
 
       assert Map.get(new_headers, "content-type") == "application/json"
-      assert Map.get(new_headers, "X-Auth-Timestamp") == "2015-03-11T16:13:52.975884+0000"
+      assert Map.get(new_headers, "X-Auth-Timestamp") == "2015-03-11T16:13:52.975884+00:00"
 
       %{headers: new_headers2} = ExHMAC.prepare(:get, url, headers, @key, @secret)
       assert Map.get(new_headers2, "content-type") == "application/json"
-      assert Map.get(new_headers2, "X-Auth-Timestamp") == "2015-03-11T16:13:52.975884+0000"
+      assert Map.get(new_headers2, "X-Auth-Timestamp") == "2015-03-11T16:13:52.975884+00:00"
     end
   end
 
@@ -53,7 +53,7 @@ defmodule ExHMACTest do
 
     with_mock ExHMAC, [:passthrough], [timestamp: fn () -> {1426, 90432, 975884} end] do
       %{headers: headers} = ExHMAC.prepare(url, @key, @secret)
-      assert Map.get(headers, "X-Auth-Signature") == "AD4cFFDciLLMIgggyKSEVtJbhA9yqnKTD2LoiOT2ZvA="
+      assert Map.get(headers, "X-Auth-Signature") == "46ukTg5FFU0vMVaxXdjoHHAm3qz651A8ZtLVsMlW9LE="
     end
   end
 
@@ -64,7 +64,7 @@ defmodule ExHMACTest do
 
     with_mock ExHMAC, [:passthrough], [timestamp: fn () -> {1426, 90432, 975884} end] do
       %{headers: new_headers} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
-      assert Map.get(new_headers, "X-Auth-Signature") == "wv2Gh7XBrUxMf4cMsuTe05asZfafv7ITYhk5yT3flg8="
+      assert Map.get(new_headers, "X-Auth-Signature") == "O1Z81eBIzn9WJkt-oGlMrrq2-TE8CwEZMtpwqoGsXpY="
     end
   end
 end

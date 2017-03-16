@@ -48,8 +48,11 @@ defmodule ExHMAC do
   defp formatted_timestamp do
     ts = ExHMAC.timestamp
     {_, _, micro} = ts
-    ut = Timex.Date.construct :calendar.now_to_datetime(ts), Timex.Date.timezone(:utc)
-    Timex.DateFormat.format!(%{ut | ms: micro}, "{ISO}")
+
+    :calendar.now_to_datetime(ts)
+    |> Timex.to_datetime(:utc)
+    |> Timex.add(Timex.Duration.from_microseconds(micro))
+    |> Timex.format!("{ISO:Extended}")
   end
 
   defp add_signature_header(headers, method, url, content, ts, secret) do

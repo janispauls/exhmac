@@ -12,7 +12,7 @@ defmodule Exhmac.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :timex, :tzdata]]
   end
 
   # Dependencies can be Hex packages:
@@ -26,7 +26,7 @@ defmodule Exhmac.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:timex, "0.13.3"},
+      {:timex, "3.1.13"},
       {:mock, github: "jjh42/mock", only: :test}
     ]
   end
