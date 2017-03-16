@@ -18,7 +18,7 @@ defmodule ExHMAC do
   end
 
   def prepare(method, url, headers, content, api_key, secret) when is_binary(content) do
-    ts = formatted_timestamp
+    ts = formatted_timestamp()
     new_url = append_api_key url, api_key
     %{
       url: new_url,
@@ -30,9 +30,9 @@ defmodule ExHMAC do
   end
 
   defp append_api_key(url, api_key) do
-    case URI.parse url do
-      %{query: nil} -> separator = "?"
-      %{query: _q} -> separator = "&"
+    separator = case URI.parse url do
+      %{query: nil} -> "?"
+      %{query: _q} -> "&"
     end
     url <> separator <> @api_key_query_param <> "=" <> api_key
   end
@@ -49,7 +49,8 @@ defmodule ExHMAC do
     ts = ExHMAC.timestamp
     {_, _, micro} = ts
 
-    :calendar.now_to_datetime(ts)
+    ts
+    |> :calendar.now_to_datetime()
     |> Timex.to_datetime(:utc)
     |> Timex.add(Timex.Duration.from_microseconds(micro))
     |> Timex.format!("{ISO:Extended}")
@@ -58,11 +59,11 @@ defmodule ExHMAC do
   defp add_signature_header(headers, method, url, content, ts, secret) do
     %{query: query, path: path} = URI.parse url
     path_url = "#{path}?#{query}"
-    case String.length(content) do
+    data_to_sign = case String.length(content) do
       0 ->
-        data_to_sign = Enum.join [String.upcase(to_string(method)), ts, path_url], @signature_delimiter
+        Enum.join [String.upcase(to_string(method)), ts, path_url], @signature_delimiter
       _ ->
-        data_to_sign = Enum.join [String.upcase(to_string(method)), ts, path_url, content], @signature_delimiter
+        Enum.join [String.upcase(to_string(method)), ts, path_url, content], @signature_delimiter
     end
     Map.put(headers, @signature_http_header, signature(data_to_sign, secret))
   end

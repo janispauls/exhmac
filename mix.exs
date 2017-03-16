@@ -5,7 +5,8 @@ defmodule Exhmac.Mixfile do
     [app: :exhmac,
      version: "0.0.3",
      elixir: "~> 1.0",
-     deps: deps]
+     deps: deps()
+    ]
   end
 
   # Configuration for the OTP application
@@ -27,7 +28,9 @@ defmodule Exhmac.Mixfile do
   defp deps do
     [
       {:timex, "3.1.13"},
-      {:mock, github: "jjh42/mock", only: :test}
+      {:mock, github: "jjh42/mock", only: :test},
+      {:dialyxir, "~> 0.5.0", only: [:dev, :test]},
+      {:credo, "~> 0.5", only: [:dev, :test]}
     ]
   end
 end
