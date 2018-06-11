@@ -31,8 +31,8 @@ defmodule ExHMAC do
 
   def validate_signature(signature, method, url, content, ts, secret) do
     data = prepare_signature_data(method, url, content, ts)
-    case signature(data, secret) == signature do
-      true -> :valid
+    case sign(data, secret) do
+      ^signature -> :valid
       _ -> :invalid
     end
   end
@@ -66,7 +66,7 @@ defmodule ExHMAC do
 
   defp add_signature_header(headers, method, url, content, ts, secret) do
     data = prepare_signature_data(method, url, content, ts)
-    Map.put(headers, @signature_http_header, signature(data, secret))
+    Map.put(headers, @signature_http_header, sign(data, secret))
   end
 
   defp prepare_signature_data(method, url, content, ts) do
@@ -80,7 +80,7 @@ defmodule ExHMAC do
     end
   end
 
-  defp signature(data, secret) do
+  defp sign(data, secret) do
     digest = :crypto.hmac(:sha256, to_char_list(secret), to_char_list(data))
     digest |> :base64.encode |> String.replace("+", "-") |> String.replace("/", "_")
   end
