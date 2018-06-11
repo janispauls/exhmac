@@ -67,4 +67,71 @@ defmodule ExHMACTest do
       assert Map.get(new_headers, "X-Auth-Signature") == "O1Z81eBIzn9WJkt-oGlMrrq2-TE8CwEZMtpwqoGsXpY="
     end
   end
+
+  test "it validates signature" do
+    url = "http://example.com?wat=noting"
+    content = "content"
+    headers = %{"content-type" => "application/json"}
+
+    %{headers: headers, url: new_url} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
+    {:ok, ts} = Map.fetch(headers, "X-Auth-Timestamp")
+    {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
+    assert ExHMAC.validate_signature(signature, :post, new_url, content, ts, @secret) == :valid
+  end
+
+  test "it invalidates provided signature when timestamp changed" do
+    url = "http://example.com?wat=noting"
+    content = "content"
+    headers = %{"content-type" => "application/json"}
+
+    %{headers: headers, url: new_url} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
+    ts = "2015-03-11T16:13:52.975884+00:00"
+    {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
+    assert ExHMAC.validate_signature(signature, :post, new_url, content, ts, @secret) == :invalid
+  end
+
+  test "it invalidates provided signature when payload changed" do
+    url = "http://example.com?wat=noting"
+    content = "content"
+    headers = %{"content-type" => "application/json"}
+
+    %{headers: headers, url: new_url} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
+    {:ok, ts} = Map.fetch(headers, "X-Auth-Timestamp")
+    {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
+    assert ExHMAC.validate_signature(signature, :post, new_url, "Content", ts, @secret) == :invalid
+  end
+
+  test "it invalidates provided signature when url changed" do
+    url = "http://example.com?wat=noting"
+    content = "content"
+    headers = %{"content-type" => "application/json"}
+
+    %{headers: headers} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
+    {:ok, ts} = Map.fetch(headers, "X-Auth-Timestamp")
+    {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
+    assert ExHMAC.validate_signature(signature, :post, url, content, ts, @secret) == :invalid
+  end
+
+  test "it invalidates provided signature when method changed" do
+    url = "http://example.com?wat=noting"
+    content = "content"
+    headers = %{"content-type" => "application/json"}
+
+    %{headers: headers} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
+    {:ok, ts} = Map.fetch(headers, "X-Auth-Timestamp")
+    {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
+    assert ExHMAC.validate_signature(signature, :get, url, content, ts, @secret) == :invalid
+  end
+
+  test "it invalidates provided signature when secret changed" do
+    url = "http://example.com?wat=noting"
+    content = "content"
+    headers = %{"content-type" => "application/json"}
+
+    %{headers: headers, url: new_url} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
+    {:ok, ts} = Map.fetch(headers, "X-Auth-Timestamp")
+    {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
+    assert ExHMAC.validate_signature(signature, :post, new_url, content, ts, "different_secret") == :invalid
+  end
+
 end
