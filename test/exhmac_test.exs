@@ -76,7 +76,7 @@ defmodule ExHMACTest do
     %{headers: headers, url: new_url} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
     {:ok, ts} = Map.fetch(headers, "X-Auth-Timestamp")
     {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
-    assert ExHMAC.validate_signature(signature, :post, new_url, content, ts, @secret)
+    assert ExHMAC.validate_signature(signature, :post, new_url, content, ts, @secret) == :valid
   end
 
   test "it invalidates provided signature when timestamp changed" do
@@ -87,7 +87,7 @@ defmodule ExHMACTest do
     %{headers: headers, url: new_url} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
     ts = "2015-03-11T16:13:52.975884+00:00"
     {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
-    refute ExHMAC.validate_signature(signature, :post, new_url, content, ts, @secret)
+    assert ExHMAC.validate_signature(signature, :post, new_url, content, ts, @secret) == :invalid
   end
 
   test "it invalidates provided signature when payload changed" do
@@ -98,7 +98,7 @@ defmodule ExHMACTest do
     %{headers: headers, url: new_url} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
     {:ok, ts} = Map.fetch(headers, "X-Auth-Timestamp")
     {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
-    refute ExHMAC.validate_signature(signature, :post, new_url, "Content", ts, @secret)
+    assert ExHMAC.validate_signature(signature, :post, new_url, "Content", ts, @secret) == :invalid
   end
 
   test "it invalidates provided signature when url changed" do
@@ -109,7 +109,7 @@ defmodule ExHMACTest do
     %{headers: headers} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
     {:ok, ts} = Map.fetch(headers, "X-Auth-Timestamp")
     {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
-    refute ExHMAC.validate_signature(signature, :post, url, content, ts, @secret)
+    assert ExHMAC.validate_signature(signature, :post, url, content, ts, @secret) == :invalid
   end
 
   test "it invalidates provided signature when method changed" do
@@ -120,7 +120,7 @@ defmodule ExHMACTest do
     %{headers: headers} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
     {:ok, ts} = Map.fetch(headers, "X-Auth-Timestamp")
     {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
-    refute ExHMAC.validate_signature(signature, :get, url, content, ts, @secret)
+    assert ExHMAC.validate_signature(signature, :get, url, content, ts, @secret) == :invalid
   end
 
   test "it invalidates provided signature when secret changed" do
@@ -131,7 +131,7 @@ defmodule ExHMACTest do
     %{headers: headers, url: new_url} = ExHMAC.prepare(:post, url, headers, content, @key, @secret)
     {:ok, ts} = Map.fetch(headers, "X-Auth-Timestamp")
     {:ok, signature} = Map.fetch(headers, "X-Auth-Signature")
-    refute ExHMAC.validate_signature(signature, :post, new_url, content, ts, "different_secret")
+    assert ExHMAC.validate_signature(signature, :post, new_url, content, ts, "different_secret") == :invalid
   end
 
 end

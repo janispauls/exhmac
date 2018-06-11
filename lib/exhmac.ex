@@ -31,7 +31,10 @@ defmodule ExHMAC do
 
   def validate_signature(signature, method, url, content, ts, secret) do
     data = prepare_signature_data(method, url, content, ts)
-    signature(data, secret) == signature
+    case signature(data, secret) == signature do
+      true -> :valid
+      _ -> :invalid
+    end
   end
 
   defp append_api_key(url, api_key) do
