@@ -29,6 +29,11 @@ defmodule ExHMAC do
     }
   end
 
+  def validate_signature(signature, method, url, content, ts, secret) do
+    data = prepare_signature_data(method, url, content, ts)
+    signature(data, secret) == signature
+  end
+
   defp append_api_key(url, api_key) do
     separator = case URI.parse url do
       %{query: nil} -> "?"
@@ -57,15 +62,19 @@ defmodule ExHMAC do
   end
 
   defp add_signature_header(headers, method, url, content, ts, secret) do
+    data = prepare_signature_data(method, url, content, ts)
+    Map.put(headers, @signature_http_header, signature(data, secret))
+  end
+
+  defp prepare_signature_data(method, url, content, ts) do
     %{query: query, path: path} = URI.parse url
     path_url = "#{path}?#{query}"
-    data_to_sign = case String.length(content) do
+    case String.length(content) do
       0 ->
         Enum.join [String.upcase(to_string(method)), ts, path_url], @signature_delimiter
       _ ->
         Enum.join [String.upcase(to_string(method)), ts, path_url, content], @signature_delimiter
     end
-    Map.put(headers, @signature_http_header, signature(data_to_sign, secret))
   end
 
   defp signature(data, secret) do
